@@ -1,3 +1,5 @@
+#ifndef MOTOR_H
+#define MOTOR_H
 #include <Arduino.h>
 
 class cMotor {
@@ -13,3 +15,4 @@ class cMotor {
         uint8_t _en_pin, _in1_pin, _in2_pin;
         eState _state;
 };
+#endif

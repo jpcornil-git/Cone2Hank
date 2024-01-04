@@ -43,6 +43,20 @@ void eeprom_save(void *config) {
 	EEPROM.put(0, *((sConfig *) config));
 }
 
+void move_motor(uint8_t event, void *param) {
+	int speed = *((int *) param) / 4; 
+
+	if (event & cNavigationEventMasks::UP) {
+		hardware.motor.setSpeed((uint8_t) speed);
+		hardware.motor.setState(cMotor::FORWARD);
+	} else if (event & cNavigationEventMasks::DOWN) {
+		hardware.motor.setSpeed((uint8_t) speed);
+		hardware.motor.setState(cMotor::BACKWARD);		
+	} else {
+		hardware.motor.setState(cMotor::BRAKE);		
+	} 
+}
+
 void setup() {
 	// Alive indication
 	hardware.led_system.blink(500,500);
@@ -56,10 +70,11 @@ void setup() {
 	eeprom_load(&config);
 
 	rootMenuItems = new cMenuItemBase* [8] {
-		(cMenuItemBase*) new cMenuItemInt("Turns     = ", "Number of turns", &config.numTurns, 0, 999),
-		(cMenuItemBase*) new cMenuItemInt("Speed (%) = ", "Max. motor speed", &config.maxSpeed, 1, 100),
-		(cMenuItemBase*) new cMenuItemFunc("Save...", "Save configuration", eeprom_save, &config),
-		(cMenuItemBase*) new cMenuItemFunc("Reset...", "Reset CPU", CpuReset, nullptr),
+		(cMenuItemBase*) new cMenuItemInt(   "Turns     = ", "Number of turns", &config.numTurns, 0, 999),
+		(cMenuItemBase*) new cMenuItemInt(   "Speed (%) = ", "Max. motor speed", &config.maxSpeed, 1, 100),
+		(cMenuItemBase*) new cMenuItemUpDown("Up/Down",      "Motor control", move_motor, &config.maxSpeed),
+		(cMenuItemBase*) new cMenuItemCB(    "Save",         "Save configuration", "Saved", eeprom_save, &config),
+		(cMenuItemBase*) new cMenuItemCB(    "Reset",        "Reset CPU", nullptr, CpuReset, nullptr),
 		(cMenuItemBase*) nullptr
 	};
 	delay(250); // wait for OLED to power up

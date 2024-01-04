@@ -38,7 +38,11 @@ void cMenuItemInt::getText(char *text, size_t *cursor_start, size_t *cursor_stop
 }
 
 void cMenuItemInt::getHelp(char *help) {    
-    strcpy(help,_help);
+    if (_state == IDLE) {  
+        strcpy(help, _help);
+    } else {
+        strcpy(help, "Use \x18\x19\x1a\x1b then <enter>");
+    }
 }
 
 cMenuItemBase::eMenuState cMenuItemInt::eventHandler(uint8_t event) {
@@ -84,35 +88,89 @@ void cMenuItemInt::select() {
 }
 
 // -----------------------------------------------------------------------------
-// cMenuItemFunc
+// cMenuItemCB
 // -----------------------------------------------------------------------------
 
-cMenuItemFunc::cMenuItemFunc(const char *label, const char *help, void (*callback)(void *), void *param) {
+cMenuItemCB::cMenuItemCB(const char *label, const char *help, const char *confirm, void (*callback)(void *), void *param) {
     _label = label;
     _help = help;
+    _confirm = confirm;
     _callback = callback;
     _param = param;
     _lastSaveTime = 0;
 }
 
-void cMenuItemFunc::getText(char *text, size_t *cursor_start, size_t *cursor_stop) {
+void cMenuItemCB::getText(char *text, size_t *cursor_start, size_t *cursor_stop) {
     *cursor_start = *cursor_stop = 0;
-    if ((millis() - _lastSaveTime) < 1000) {
-        sprintf(text, "%s (Saved)", _label);
+    if (_confirm && (millis() - _lastSaveTime) < 1000) {
+        sprintf(text, "%s (%s)", _label, _confirm);
     } else {
         strcpy(text, _label);
     }
 }
 
-cMenuItemBase::eMenuState cMenuItemFunc::eventHandler(uint8_t event) {
+cMenuItemBase::eMenuState cMenuItemCB::eventHandler(uint8_t event) {
     return IDLE;
 }
 
-void cMenuItemFunc::getHelp(char *help) {    
+void cMenuItemCB::getHelp(char *help) {  
     strcpy(help, _help);
 }
 
-void cMenuItemFunc::select() {
+void cMenuItemCB::select() {
     _callback(_param);
     _lastSaveTime = millis();
+}
+
+// -----------------------------------------------------------------------------
+// cMenuItemFunc
+// -----------------------------------------------------------------------------
+
+cMenuItemUpDown::cMenuItemUpDown(const char *label, const char *help, void (*callback)(uint8_t event, void *), void *param) {
+    _label = label;
+    _help = help;
+    _callback = callback;
+    _param = param;
+    _info = nullptr;
+}
+
+void cMenuItemUpDown::getText(char *text, size_t *cursor_start, size_t *cursor_stop) {
+    if (_info) {
+        sprintf(text, "%s %s", _label, _info);
+        *cursor_stop = strlen(text);
+        *cursor_start = *cursor_stop - strlen(_info);
+    } else {
+        strcpy(text, _label);
+        *cursor_start = *cursor_stop = 0;
+    }
+}
+
+cMenuItemBase::eMenuState cMenuItemUpDown::eventHandler(uint8_t event) {
+
+    if (event & cNavigationEventMasks::SELECT) {
+        _state = IDLE; // Exit edit mode
+        _info = nullptr;
+    } else {
+        if (event & cNavigationEventMasks::UP) {
+            _info = "Up";
+        } else if (event & cNavigationEventMasks::DOWN) {
+            _info = "Down";
+        } else {
+            _info = "Idle";
+        }
+        _callback(event, _param);
+    }
+    return _state;
+}
+
+void cMenuItemUpDown::getHelp(char *help) {    
+    if (_state == IDLE) {
+        strcpy(help, _help);
+    } else {
+        strcpy(help, "Use \x18\x19 then <enter>");
+    };
+}
+
+void cMenuItemUpDown::select() {
+    _state = EDIT;
 }

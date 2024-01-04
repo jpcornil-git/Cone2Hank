@@ -12,14 +12,14 @@ unsigned long lastDisplayEvent=0;
 
 bool blink = false;
 
-// Screen saver date
-int hCenter = 64;                      // horizontal center of animation
-int vCenter = 32;                      // vertical center of animation
-int Hstar, Vstar;                      // star location currently
-int Quantity = 20;                     // number of stars
-int StarProgress[20];                  // array that tracks progress of each star
-int StarAngle[20] = {};                // array that tracks angle of each star
-int interval[20] = {};                 // array used to track speed of each star
+// Screen saver data
+int hCenter = 64;		// horizontal center of animation
+int vCenter = 32;       // vertical center of animation
+int Hstar, Vstar;       // star location currently
+int Quantity = 20;      // number of stars
+int StarProgress[20];   // array that tracks progress of each star
+int StarAngle[20] = {}; // array that tracks angle of each star
+int interval[20] = {};  // array used to track speed of each star
 
 #define MENU_LINES 4
 #define LINE_SIZE  24
@@ -141,6 +141,10 @@ void cDisplay::displayMenu(const char * title) {
 		_oled->drawFastHLine(0, SCREEN_HEIGHT - 9, SCREEN_WIDTH, 1);
 		_oled->setCursor(0,0);
 		_oled->print(title);
+		_oled->print(" ");
+		_oled->print(_cursorCurrent+1);
+		_oled->print(" / ");
+		_oled->print(_menuSize);
 
 		for(size_t line=0; line < MENU_LINES; line++) {
 			_oled->setCursor(5,11+line*9);
@@ -158,10 +162,16 @@ void cDisplay::displayMenu(const char * title) {
 			}
 		}
 
-		_oled->drawRoundRect(0, 10 + (_cursorCurrent-_cursorStart) * 9, SCREEN_WIDTH, 9, 4, SH110X_WHITE);
+		_oled->drawRoundRect(0, 10 + (_cursorCurrent-_cursorStart) * 9, SCREEN_WIDTH-4, 9, 4, SH110X_WHITE);
 		_oled->setCursor(0, SCREEN_HEIGHT - 7);
 		_menu[_cursorCurrent]->getHelp(lineBuffer);
 		_oled->print(lineBuffer);
+
+		_oled->drawLine(126, 10, 126, 55, SH110X_WHITE);
+		_oled->drawRect(
+			125, 10+(45 * _cursorStart) / _menuSize,
+			3, (45 * MENU_LINES) / _menuSize,
+			SH110X_WHITE);
 
 		alive_indication();
 		_oled->display();

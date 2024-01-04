@@ -8,6 +8,8 @@
 // 1      1       0         Forward
 // 1      1       1         Brake (?)
 
+#define MAX_SPEED 255
+
 cMotor::cMotor(uint8_t en_pin, uint8_t in1_pin, uint8_t in2_pin) {
     _en_pin  = en_pin;
     _in1_pin = in1_pin;
@@ -21,7 +23,8 @@ cMotor::cMotor(uint8_t en_pin, uint8_t in1_pin, uint8_t in2_pin) {
 }
 
 void cMotor::setSpeed(uint8_t speed) {
-    analogWrite(_en_pin, speed);
+    uint8_t speed_255 = (uint8_t) (((int) speed * MAX_SPEED) / 100);
+    analogWrite(_en_pin, speed_255);
 }
 
 cMotor::eState cMotor::getState(){
@@ -44,7 +47,7 @@ void cMotor::setState(eState state){
             digitalWrite(_in1_pin, LOW);
             digitalWrite(_in2_pin, LOW);
             if (_state == BRAKE)
-                analogWrite(_en_pin, 255);
+                analogWrite(_en_pin, MAX_SPEED);
             break; 
     }
 }
