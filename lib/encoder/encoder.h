@@ -2,18 +2,18 @@
 #define OPTICAL_H
 #include <Arduino.h>
 
-class cOptical {
+class cEncoder {
   public:
-    cOptical(uint8_t pin);
-    ~cOptical() = default;
+    cEncoder(uint8_t pin);
+    ~cEncoder() = default;
 
-    void reset();
+    void reset(int initValue = 0);
     int  getCounter();
     bool update();
 
   private:
     static void interruptHandler();
-    static cOptical *_instance;
+    static cEncoder *_instance;
 
     uint8_t          _pin;
     int              _counter;

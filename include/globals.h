@@ -6,7 +6,7 @@
 #include "joystick.h"
 #include "button.h"
 #include "led.h"
-#include "optical.h"
+#include "encoder.h"
 
 #define SCREEN_I2C_ADDRESS 0x3c
 #define SCREEN_WIDTH  128
@@ -23,14 +23,14 @@
 #define MOTOR_IN1 5
 #define MOTOR_IN2 7
 
-#define OPTICAL_IN 0
+#define ENCODER_IN 0
 
 struct sHardware {
 	cMotor 				motor;
 	cJoystick 			joystick;
 	cButton   			button;
 	cLed				led_system, led_button;
-	cOptical  			optical;
+	cEncoder  			encoder;
 	Adafruit_SH1106G	oled;
 };
 

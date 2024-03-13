@@ -1,31 +1,31 @@
 #include <util/atomic.h>
-#include "optical.h"
+#include "encoder.h"
 
-cOptical *cOptical::_instance;
+cEncoder *cEncoder::_instance;
 
-void cOptical::interruptHandler() {
-    _instance->_counter++;
+void cEncoder::interruptHandler() {
+    _instance->_counter--;
     _instance->_update = true;
 }
 
-cOptical::cOptical(uint8_t pin) : _pin(pin) {
+cEncoder::cEncoder(uint8_t pin) : _pin(pin) {
     _instance = this;
     pinMode(_pin, INPUT);
     attachInterrupt(digitalPinToInterrupt(_pin), interruptHandler, RISING);
 }
 
-void cOptical::reset() {
+void cEncoder::reset(int initValue) {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-       _counter = 0;
+       _counter = initValue;
        _update = true;
     }
 }
 
-int cOptical::getCounter() {
+int cEncoder::getCounter() {
     return _counter;
 }
 
-bool cOptical::update() {
+bool cEncoder::update() {
     if ( _update ) {
         _update = false;
         return true;

@@ -15,7 +15,7 @@ struct sHardware hardware = {
 	.button 	= cButton(BUTTON_SW_PIN),
 	.led_system = cLed(LED_BUILTIN),
 	.led_button = cLed(BUTTON_LED_PIN),
-	.optical 	= cOptical(OPTICAL_IN),
+	.encoder 	= cEncoder(ENCODER_IN),
 	.oled		= Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1)
 };
 
@@ -90,7 +90,7 @@ void setup() {
 void loop() {
 	hardware.joystick.update();
 	hardware.button.update();
-	hardware.optical.update();
+	hardware.encoder.update();
 	hardware.led_system.update();
 	hardware.led_button.update();
 
@@ -101,7 +101,7 @@ void loop() {
 			if (buttonEvent == cButton::SHORT) {
 				hardware.motor.setSpeed((uint8_t)config.maxSpeed);
 				hardware.motor.setState(cMotor::FORWARD);
-				hardware.optical.reset();
+				hardware.encoder.reset(N_COUNT_PER_TURN*config.numTurns);
 				systemState = RUNNING;
 				hardware.led_button.on();
 			}
@@ -114,11 +114,11 @@ void loop() {
 				systemState = PAUSED;
 				hardware.led_button.blink(500,500);
 			} else {
-				if (hardware.optical.getCounter() >= N_COUNT_PER_TURN*config.numTurns) {
+				if (hardware.encoder.getCounter() <= 0) {
 					systemState = INIT;
 				}
 			}
-			display->runScreen("Running", hardware.optical.getCounter()/N_COUNT_PER_TURN);
+			display->runScreen("Running", hardware.encoder.getCounter()/N_COUNT_PER_TURN);
 			break;
 
 		case PAUSED:
@@ -128,7 +128,7 @@ void loop() {
 				systemState = RUNNING;
 				hardware.led_button.on();
 			}
-			display->runScreen("Paused", hardware.optical.getCounter()/N_COUNT_PER_TURN);
+			display->runScreen("Paused", hardware.encoder.getCounter()/N_COUNT_PER_TURN);
 			break;
 
 		case INIT:
@@ -136,7 +136,7 @@ void loop() {
 			hardware.joystick.reset();
 			hardware.button.reset();
 			hardware.led_button.off();
-			hardware.optical.reset();
+			hardware.encoder.reset();
 
 			systemState = CONFIG;
 			break;
