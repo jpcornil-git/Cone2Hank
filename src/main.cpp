@@ -4,8 +4,6 @@
 #include "menu.h"
 #include "display.h"
 
-#define N_COUNT_PER_TURN 16
-
 enum eState {RESET, INIT, CONFIG, EDIT, RUNNING, PAUSED};
 eState systemState;
 
@@ -101,7 +99,7 @@ void loop() {
 			if (buttonEvent == cButton::SHORT) {
 				hardware.motor.setSpeed((uint8_t)config.maxSpeed);
 				hardware.motor.setState(cMotor::FORWARD);
-				hardware.encoder.reset(N_COUNT_PER_TURN*config.numTurns);
+				hardware.encoder.reset(config.numTurns);
 				systemState = RUNNING;
 				hardware.led_button.on();
 			}
@@ -118,7 +116,7 @@ void loop() {
 					systemState = INIT;
 				}
 			}
-			display->runScreen("Running", hardware.encoder.getCounter()/N_COUNT_PER_TURN);
+			display->runScreen("Running", &hardware.encoder);
 			break;
 
 		case PAUSED:
@@ -128,7 +126,7 @@ void loop() {
 				systemState = RUNNING;
 				hardware.led_button.on();
 			}
-			display->runScreen("Paused", hardware.encoder.getCounter()/N_COUNT_PER_TURN);
+			display->runScreen("Paused", &hardware.encoder);
 			break;
 
 		case INIT:

@@ -10,12 +10,13 @@ class cEncoder {
     void reset(int initValue = 0);
     int  getCounter();
     bool update();
+    void interruptHandler();
 
   private:
-    static void interruptHandler();
-    static cEncoder *_instance;
-
     uint8_t          _pin;
+    uint8_t          _shiftRegister;
+    uint8_t          _accumulator;
+    bool             _level;
     int              _counter;
     bool             _update;
 };

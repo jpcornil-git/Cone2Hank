@@ -12,7 +12,7 @@ class cDisplay {
         void reset();
         void splashScreen();
         void configScreen(const char *title, cJoystick *joystick);
-        void runScreen(const char *title, int counter);
+        void runScreen(const char *title, cEncoder *encoder);
     private:
         Adafruit_SH1106G *_oled;
         cMenuItemBase **_menu;

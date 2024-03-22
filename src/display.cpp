@@ -113,7 +113,7 @@ void cDisplay::splashScreen() {
 }
 
 
-void cDisplay::runScreen(const char *title, int counter) {
+void cDisplay::runScreen(const char *title, cEncoder *encoder) {
 	if (isScreenUpdate(true)) {
 		_oled->clearDisplay();
 		_oled->drawFastHLine(0, 9                , SCREEN_WIDTH, 1);
@@ -122,7 +122,7 @@ void cDisplay::runScreen(const char *title, int counter) {
 		_oled->print(title);
 		_oled->setCursor(15,22);
 		_oled->setTextSize(3);
-		_oled->println(counter);
+		_oled->println(encoder->getCounter());
 		_oled->setTextSize(1);
 
 		alive_indication();	
