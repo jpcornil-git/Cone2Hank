@@ -31,6 +31,11 @@ void (* CpuReset)(void *) = 0;
 void eeprom_load(sConfig *config) {
 	sConfig data;
 
+	// Default Configuration 
+	config->numTurns = 200;
+	config->maxSpeed = 100;
+
+	// Read settings from eeprom if any
 	EEPROM.get(0, data);
 	if (data.magic == config->magic) {
 		*config = data;
@@ -59,14 +64,10 @@ void setup() {
 	// Alive indication
 	hardware.led_system.blink(500,500);
 
-	// Default Configuration 
-	// FIXME config from flash
-	config.numTurns = 200;
-	config.maxSpeed = 100;
-
 	// Restore settings
 	eeprom_load(&config);
 
+	// Create OLED Menu
 	rootMenuItems = new cMenuItemBase* [8] {
 		(cMenuItemBase*) new cMenuItemInt(   "Turns     = ", "Number of turns", &config.numTurns, 0, 999),
 		(cMenuItemBase*) new cMenuItemInt(   "Speed (%) = ", "Max. motor speed", &config.maxSpeed, 1, 100),
@@ -75,10 +76,13 @@ void setup() {
 		(cMenuItemBase*) new cMenuItemCB(    "Reset",        "Reset CPU", nullptr, CpuReset, nullptr),
 		(cMenuItemBase*) nullptr
 	};
-	delay(250); // wait for OLED to power up
+
+	// wait for OLED to power up
+	delay(250);
+
+	// Intialize display
 	hardware.oled.begin(SCREEN_I2C_ADDRESS, false);
 	display = new cDisplay(&hardware.oled, rootMenuItems);
-
 	display->splashScreen();
 	delay(1000);
 
@@ -86,6 +90,7 @@ void setup() {
 }
 
 void loop() {
+	// Update object states
 	hardware.joystick.update();
 	hardware.button.update();
 	hardware.encoder.update();
