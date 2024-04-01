@@ -57,7 +57,7 @@ void move_motor(uint8_t event, void *param) {
 		hardware.motor.setSpeed((uint8_t) speed);
 		hardware.motor.setState(cMotor::BACKWARD);		
 	} else {
-		hardware.motor.setState(cMotor::BRAKE);		
+		hardware.motor.setState(cMotor::STOP);		
 	} 
 }
 
@@ -118,7 +118,7 @@ void loop() {
 
 		case RUNNING:
 			if (buttonEvent == cButton::SHORT) {
-				hardware.motor.setState(cMotor::BRAKE);
+				hardware.motor.setState(cMotor::STOP);
 				systemState = PAUSED;
 				hardware.led_button.blink(500,500);
 			} else {
@@ -140,7 +140,7 @@ void loop() {
 			break;
 
 		case INIT:
-			hardware.motor.setState(cMotor::BRAKE);
+			hardware.motor.setState(cMotor::STOP);
 			hardware.joystick.reset();
 			hardware.button.reset();
 			hardware.led_button.off();
