@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <EEPROM.h>
+#include<avr/wdt.h>
 #include "globals.h"
 #include "menu.h"
 #include "display.h"
@@ -87,9 +88,13 @@ void setup() {
 	delay(1000);
 
 	systemState = INIT;
+	wdt_enable(WDTO_1S);
 }
 
 void loop() {
+	// Watchdog reset
+	wdt_reset();
+
 	// Update object states
 	hardware.joystick.update();
 	hardware.button.update();
