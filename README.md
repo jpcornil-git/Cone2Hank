@@ -24,3 +24,6 @@ Arduino firmware for a "Cone to Hank" winding machine
   - Splash screen & screensaver
 
 ... only ~100 bytes left in SRAM between heap/stack ...
+
+- **Development environment**
+  - Microsoft's Visual Studio Code with PlatformIO IDE extension
