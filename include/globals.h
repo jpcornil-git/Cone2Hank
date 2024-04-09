@@ -26,12 +26,12 @@
 #define ENCODER_IN 0
 
 struct sHardware {
-	cMotor 				motor;
-	cJoystick 			joystick;
-	cButton   			button;
-	cLed				led_system, led_button;
-	cEncoder  			encoder;
-	Adafruit_SH1106G	oled;
+	cMotor 				*motor;
+	cJoystick 			*joystick;
+	cButton   			*button;
+	cLed				*led_system, *led_button;
+	cEncoder  			*encoder;
+	Adafruit_SH1106G	*oled;
 };
 
 #endif

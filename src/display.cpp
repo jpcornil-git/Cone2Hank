@@ -108,7 +108,11 @@ void cDisplay::screenSaver() {
 
 
 void cDisplay::splashScreen() {
+	const char version[] = "v" FW_VERSION;
+
 	_oled->drawBitmap(0,0,bouclette_bitmap_bouclette, 128, 64, 1);
+	_oled->setCursor(0, SCREEN_HEIGHT - 7);
+	_oled->println(version);
 	_oled->display();
 }
 
