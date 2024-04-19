@@ -27,3 +27,10 @@ Arduino firmware for a "Cone to Hank" winding machine
 
 - **Development environment**
   - Microsoft's Visual Studio Code with PlatformIO IDE extension
+  - Build targets:
+    - leonardo
+      Release target (expect simavr in gdb mode [-g] for debug)
+    - leonardo-mmcu
+      Include the .mmcu section to the ELF output (dropped otherwise)
+      avr_mcu_section.c defines simavr parameters as well as addresses (I/O, SRAM, ...) to include in vcd output.
+      e.g. monitor stack and heap trends (and clashes) over time as 'analog' signals
